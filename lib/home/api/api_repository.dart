@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:tr_news/home/model/topheadlinesnews/response_top_headlines_news.dart';
+import 'package:daily_news/home/model/topheadlinesnews/response_top_headlines_news.dart';
 
 import 'api_calls.dart';
 

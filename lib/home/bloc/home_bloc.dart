@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
-import 'package:tr_news/home/api/api_repository.dart';
-import 'package:tr_news/home/model/topheadlinesnews/response_top_headlines_news.dart';
+import 'package:daily_news/home/api/api_repository.dart';
+import 'package:daily_news/home/model/topheadlinesnews/response_top_headlines_news.dart';
 
 abstract class DataState{}
 class DataInitial extends DataState{}

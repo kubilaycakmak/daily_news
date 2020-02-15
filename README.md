@@ -1,4 +1,4 @@
-# tr_news
+# Daily News
 
 A new Flutter project.
 

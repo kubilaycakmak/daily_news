@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:tr_news/home/model/topheadlinesnews/response_top_headlines_news.dart';
+import 'package:daily_news/home/model/topheadlinesnews/response_top_headlines_news.dart';
 
 class ApiCalls{
   final Dio _dio = Dio();

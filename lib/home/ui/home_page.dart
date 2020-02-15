@@ -5,10 +5,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:tr_news/home/bloc/home_bloc.dart';
-import 'package:tr_news/home/model/category/category.dart';
-import 'package:tr_news/home/model/topheadlinesnews/response_top_headlines_news.dart';
-import 'package:tr_news/home/ui/style/color.dart';
+import 'package:daily_news/home/bloc/home_bloc.dart';
+import 'package:daily_news/home/model/category/category.dart';
+import 'package:daily_news/home/model/topheadlinesnews/response_top_headlines_news.dart';
+import 'package:daily_news/home/ui/style/color.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 final GlobalKey<ScaffoldState> scaffoldState = GlobalKey<ScaffoldState>();
