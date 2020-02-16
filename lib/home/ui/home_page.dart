@@ -1,6 +1,6 @@
 import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:daily_news/home/api/api_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,7 +12,7 @@ import 'package:daily_news/home/ui/style/color.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 final GlobalKey<ScaffoldState> scaffoldState = GlobalKey<ScaffoldState>();
-
+String globalTitle = 'Hepsi';
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
 
@@ -21,8 +21,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
-
     String getStrToday() {
     var today = DateFormat().add_yMMMMd().format(DateTime.now());
     var strDay = today.split(" ")[1].replaceFirst(',', '');
@@ -36,6 +34,9 @@ class _HomePageState extends State<HomePage> {
       strDay = strDay + "th";
     }
     var strMonth = today.split(" ")[0];
+    // if(strMonth == 'February'){
+    //   strMonth = 'Şubat';
+    // }
     var strYear = today.split(" ")[2];
     return "$strDay $strMonth $strYear";
   }
@@ -75,8 +76,9 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            SizedBox(height: 16.0,),
-            _buildWidgetLabelLatestNews(context),
+            SizedBox(height: 12.0,),
+            SizedBox(height: 12.0,),
+            _buildWidgetLabelLatestNews(context, globalTitle),
             _buildWidgetSubtitleLatestNews(context),
             Expanded(
               child: WidgetLatestNews(),
@@ -90,7 +92,7 @@ class _HomePageState extends State<HomePage> {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.0),
       child: Text(
-        'Top mem',
+        '',
         style: Theme.of(context).textTheme.caption.merge(
           TextStyle(
             color: colorDark
@@ -100,14 +102,15 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildWidgetLabelLatestNews(BuildContext context){
+  Widget _buildWidgetLabelLatestNews(BuildContext context, String titleLabel){
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.0),
+      padding: EdgeInsets.symmetric(horizontal: 12.0),
       child: Text(
-        'Latest News',
+        '$titleLabel',
         style: Theme.of(context).textTheme.subtitle.merge(
           TextStyle(
             fontSize: 18.0,
+            letterSpacing: 1,
             color: colorDark
           )
         ),
@@ -115,42 +118,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
   
-  Widget _buildWidgetSearch(){
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.0),
-      child: Container(
-        padding: EdgeInsets.only(
-          left: 12.0,
-          top:8.0,
-          right:12.0,
-          bottom:8.0
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(
-            Radius.circular(20),
-          ),
-          color: Colors.white,
-        ),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: Text(
-                'What are you looking for?',
-                style: TextStyle(
-                  color: Colors.black26,
-                ),
-              ),
-            ),
-            Icon(
-              Icons.search,
-              size: 16.0,
-              color: Colors.black26,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class WidgetTitle extends StatelessWidget {
@@ -161,30 +128,41 @@ class WidgetTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.0),
-        child: RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: 'News Today\n',
-                style: Theme.of(context).textTheme.title.merge(
-                  TextStyle(
-                    color: colorGray
+        padding: EdgeInsets.symmetric(horizontal: 16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Bugün\n',
+                    style: Theme.of(context).textTheme.title.merge(
+                      TextStyle(
+                        color: colorGray,
+                        letterSpacing: 2
+                      )
+                    )
+                  ),
+                  TextSpan(
+                    text: strToday,
+                    style: Theme.of(context).textTheme.caption.merge(
+                      TextStyle(
+                        color: colorGrayTransparent,
+                        fontSize: 13.0
+                      )
+                    )
                   )
-                )
+                ],
               ),
-              TextSpan(
-                text: strToday,
-                style: Theme.of(context).textTheme.caption.merge(
-                  TextStyle(
-                    color: colorGrayTransparent,
-                    fontSize: 10.0
-                  )
-                )
-              )
-            ]
-          ),
-        ),
+            ),
+            IconButton(
+              icon: Icon(Icons.more_horiz, size: 20, color: colorGray,),
+              onPressed: (){
+              },
+            ),
+          ],
+        )
       ),
     );
   }
@@ -198,30 +176,33 @@ class WidgetCategory extends StatefulWidget {
 }
 
 class _WidgetCategoryState extends State<WidgetCategory> {
+  TextEditingController _searchQueryController = new TextEditingController();
+  bool isSearch = false;
+  double dynamicWidth = 68.0;
   int indexSelectedCategory = 0;
   final listCategories = [
     Category(image: '', title: 'All'),
+    Category(image: '', title: 'Search'),
+    Category(image: 'assets/img_sport.png', title: 'Sport'),
+    Category(image: 'assets/img_health.png', title: 'Health'),
+    Category(image: 'assets/img_technology.png', title: 'Technology'),
+    Category(image: 'assets/img_science.png', title: 'Science'),
     Category(image: 'assets/img_business.png', title: 'Business'),
     Category(image: 'assets/img_entertainment.png', title: 'Entertainment'),
-    Category(image: 'assets/img_health.png', title: 'Health'),
-    Category(image: 'assets/img_science.png', title: 'Science'),
-    Category(image: 'assets/img_sport.png', title: 'Sport'),
-    Category(image: 'assets/img_technology.png', title: 'Technology'),
   ];
 
   @override
   void initState() {
-    // TODO: implement initState
     final homeBloc = BlocProvider.of<HomeBloc>(context);
     homeBloc.add(DataEvent(listCategories[indexSelectedCategory].title));
+    print(listCategories[indexSelectedCategory].title);
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
     final homeBloc = BlocProvider.of<HomeBloc>(context);
-
     return Container(
-      height: 95,
+      height: 80,
       child: ListView.builder(
         shrinkWrap: false,
         scrollDirection: Axis.horizontal,
@@ -238,21 +219,71 @@ class _WidgetCategoryState extends State<WidgetCategory> {
                   onTap: (){
                     setState(() {
                       indexSelectedCategory = index;
+                      globalTitle = listCategories[indexSelectedCategory].title;
+                      print(globalTitle);
+                      if(index == 1){
+                        dynamicWidth = 190;
+                      }else{
+                        dynamicWidth = 68.0;
+                      }
                       homeBloc.add(DataEvent(
                         listCategories[indexSelectedCategory].title
                       ));
                     });
                   },
-                  child: index == 0
+                  child: 
+                  index == 1 ? AnimatedContainer(
+                      curve: Curves.fastOutSlowIn,
+                      duration: Duration(milliseconds: 150),
+                      width: dynamicWidth,
+                      height: 53.0,
+                      decoration: BoxDecoration(
+                        color: Color(0xFF5F5F5F),
+                        border: indexSelectedCategory == index
+                          ? Border.all(
+                              color: colorTeal,
+                              width: 2.0,
+                            ): null
+                      ),
+                      child: dynamicWidth == 68.0 ? Icon(Icons.search,
+                      color: colorWhite,)
+                      :
+                      Expanded(
+                          child: 
+                          TextFormField(
+                            controller: _searchQueryController,
+                            decoration: InputDecoration(
+                              hintText: 'Aradığınızı bulalım ?',
+                              hintStyle: TextStyle(
+                                color: colorDarkLighter,
+                                fontSize: 20
+                              ),
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                              enabledBorder: InputBorder.none,
+                            ),
+                            cursorColor: colorDark,
+                            keyboardAppearance: Brightness.dark,
+                            keyboardType: TextInputType.text,
+                            textInputAction: TextInputAction.done,
+                            style: TextStyle(
+                              color: colorDark,
+                              fontSize: 20
+                            ),
+                          ),
+                        ),
+                      )
+                  :
+                  index == 0
                   ? Container(
                     width: 68.0,
-                    height: 68.0,
+                    height: 53.0,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
+                      shape: BoxShape.rectangle,
                       color: Color(0xFF5F5F5F),
                       border: indexSelectedCategory == index
                         ? Border.all(
-                            color: colorGrayTransparent,
+                            color: colorTeal,
                             width: 2.0,
                           ): null
                     ),
@@ -261,38 +292,101 @@ class _WidgetCategoryState extends State<WidgetCategory> {
                     )
                   : Container(
                     width: 68.0,
-                          height: 68.0,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              image: AssetImage(itemCategory.image),
-                              fit: BoxFit.cover,
-                            ),
-                            border: indexSelectedCategory == index
-                                ? Border.all(
-                                    color: colorGrayTransparent,
-                                    width: 2.0,
-                                  )
-                                : null,
-                          ),
+                    height: 53.0,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.rectangle,
+                      image: DecorationImage(
+                        image: AssetImage(itemCategory.image),
+                        fit: BoxFit.cover,
+                      ),
+                      border: indexSelectedCategory == index
+                          ? Border.all(
+                              color: colorTeal,
+                              width: 2.0,
+                            )
+                          : null,
+                    ),
                   ),
                 ),
                 SizedBox(height: 8.0,),
                 Text(
-                  itemCategory.title,
+                  "${itemCategory.title == 'All' ? 'Hepsi' : itemCategory.title == 'Sport' ? 'Spor' : itemCategory.title == 'Health' ? 'Sağlık' : itemCategory.title == 'Technology' ? 'Teknoloji' : itemCategory.title == 'Science' ? 'Bilim' : itemCategory.title == 'Business' ? 'İş' : itemCategory.title == 'Entertainment' ? 'Eğlence' : ''}",
                   style: TextStyle(
                     fontSize: 14, 
                     color: colorGray,
                     fontWeight: indexSelectedCategory == index ?
                     FontWeight.w500 : FontWeight.w400
                   ),
-                )
+                ),
+                isSearch == false ? Container() : _buildWidgetSearch()
               ],
             ),
           );
         },
         itemCount: listCategories.length,
       ),
+    );
+  }
+  Widget _buildWidgetSearch(){
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.0),
+      child: InkWell(
+        onTap: (){
+          // showSearch(context: context, delegate: DataSearch(
+          // ));
+        },
+        child: Container(
+          padding: EdgeInsets.only(
+            left: 12.0,
+            top:8.0,
+            right:12.0,
+            bottom:8.0
+          ),
+          decoration: BoxDecoration(
+            border: Border.all(color: colorDark, width: 2),
+            borderRadius: BorderRadius.all(
+              Radius.circular(25),
+            ),
+            color: colorTeal,
+          ),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: 
+                TextFormField(
+                  controller: _searchQueryController,
+                  decoration: InputDecoration(
+                    hintText: 'Aradığınızı bulalım ?',
+                    hintStyle: TextStyle(
+                      color: colorDarkLighter,
+                      fontSize: 20
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                    enabledBorder: InputBorder.none,
+                  ),
+                  cursorColor: colorDark,
+                  keyboardAppearance: Brightness.dark,
+                  keyboardType: TextInputType.text,
+                  textInputAction: TextInputAction.done,
+                  style: TextStyle(
+                    color: colorDark,
+                    fontSize: 20
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.search),
+                onPressed: (){
+                  print(_searchQueryController.text);
+                  globalTitle = 'Arama Sonucu';
+                },
+                color: colorDark,
+              ),
+            ],
+          ),
+        ),
+      )
     );
   }
 }
@@ -504,15 +598,17 @@ class _WidgetLatestNewsState extends State<WidgetLatestNews> {
                     Padding(
                       padding: const EdgeInsets.only(left: 16.0),
                       child: ClipRRect(
-                        /*child: Image.network(
-                          itemArticle.urlToImage ??
-                              'http://api.bengkelrobot.net:8001/assets/images/img_not_found.jpg',
-                          width: 72.0,
-                          height: 72.0,
-                          fit: BoxFit.cover,
-                        ),*/
+                        
+                        // child: Image.network(
+                        //   itemArticle.urlToImage ??
+                        //       'http://api.bengkelrobot.net:8001/assets/images/img_not_found.jpg',
+                        //   width: 72.0,
+                        //   height: 72.0,
+                        //   fit: BoxFit.cover,
+                        // ),
                         child: CachedNetworkImage(
-                          imageUrl: itemArticle.urlToImage,
+                          imageUrl: itemArticle.urlToImage ??
+                               'http://api.bengkelrobot.net:8001/assets/images/img_not_found.jpg',
                           imageBuilder: (context, imageProvider) {
                             return Container(
                               width: 72.0,

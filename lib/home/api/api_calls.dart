@@ -3,7 +3,7 @@ import 'package:daily_news/home/model/topheadlinesnews/response_top_headlines_ne
 
 class ApiCalls{
   final Dio _dio = Dio();
-  final String _baseUrl = 'https://newsapi.org/v2/top-headlines?country=tr&apiKey=057173947e3e464c93512aece9f90fe2';
+  final String _baseUrl = 'https://newsapi.org/v2/top-headlines?country=tr&apiKey=9ff9625e03ed440d861aff93a467e5fe';
 
   void printOutError(error, StackTrace stackTrace){
     print('Exception occured: $error with stacktrace: $stackTrace');
@@ -12,6 +12,16 @@ class ApiCalls{
   Future<ResponseTopHeadlinesNews> getTopHeadlinesNews() async{
     try{
       final response = await _dio.get(_baseUrl);
+      print(response);
+      return ResponseTopHeadlinesNews.fromJson(response.data);
+    }catch (error, stractrace){
+      return ResponseTopHeadlinesNews.withError('$error');
+    }
+  }
+  Future<ResponseTopHeadlinesNews> getTopSearchlinesNews(String query) async{
+    try{
+      final response = await _dio.get('$_baseUrl?q=$query');
+      print(response);
       return ResponseTopHeadlinesNews.fromJson(response.data);
     }catch (error, stractrace){
       return ResponseTopHeadlinesNews.withError('$error');

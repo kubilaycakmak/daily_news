@@ -11,5 +11,5 @@ var colorYellowish = Color(0xFFEAFF29);
 var colorDarkTransparent = Color(0x91161616);
 var favIconBorder = Icons.favorite_border;
 var favIconFill = Icons.favorite;
-
+var colorTeal = Colors.tealAccent[200];
 var colorOfIconButtons = Colors.white70;

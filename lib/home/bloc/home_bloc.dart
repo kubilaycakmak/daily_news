@@ -17,6 +17,7 @@ class DataFailed extends DataState {
 }
 class DataEvent {
   final String category;
+  
 
   DataEvent(this.category);
 }
@@ -28,6 +29,7 @@ class HomeBloc extends Bloc<DataEvent, DataState>{
 
   @override
   Stream<DataState> mapEventToState(DataEvent event) async*{
+    String query;
     yield DataLoading();
     final apiRepository = ApiRepository();
     final categoryLowerCase = event.category.toLowerCase();
@@ -82,6 +84,14 @@ class HomeBloc extends Bloc<DataEvent, DataState>{
       break;
       case 'technology':
       final data = await apiRepository.fetchTopTechnologyHeadlinesNews();
+      if(data.error == null){
+        yield DataSuccess(data);
+      }else{
+        yield DataFailed('Failed to fecth data');
+      }
+      break;
+      case 'search':
+      final data = await apiRepository.fetchTopSearchHeadlinesNews(query);
       if(data.error == null){
         yield DataSuccess(data);
       }else{

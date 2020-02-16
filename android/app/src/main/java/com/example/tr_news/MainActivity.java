@@ -1,4 +1,4 @@
-package com.example.tr_news;
+package com.example.daily_news;
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity;

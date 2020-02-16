@@ -26,4 +26,6 @@ class ApiRepository{
 
   Future<ResponseTopHeadlinesNews> fetchTopTechnologyHeadlinesNews() =>
       _apiCalls.getTopTechnologyHeadlinesNews();
+
+  Future<ResponseTopHeadlinesNews> fetchTopSearchHeadlinesNews(String query) => _apiCalls.getTopSearchlinesNews(query);
 }
