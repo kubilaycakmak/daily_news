@@ -606,9 +606,12 @@ class _WidgetLatestNewsState extends State<WidgetLatestNews> {
                         //   height: 72.0,
                         //   fit: BoxFit.cover,
                         // ),
-                        child: CachedNetworkImage(
-                          imageUrl: itemArticle.urlToImage ??
-                               'http://api.bengkelrobot.net:8001/assets/images/img_not_found.jpg',
+                        child: Image.asset(
+                            'assets/img_not_found.jpg',
+                            fit: BoxFit.cover,
+                            width: 72.0,
+                            height: 72.0,
+                          ),
                           imageBuilder: (context, imageProvider) {
                             return Container(
                               width: 72.0,
@@ -631,7 +634,7 @@ class _WidgetLatestNewsState extends State<WidgetLatestNews> {
                             ),
                           ),
                           errorWidget: (context, url, error) => Image.asset(
-                            'assets/images/img_not_found.jpg',
+                            'assets/img_not_found.jpg',
                             fit: BoxFit.cover,
                             width: 72.0,
                             height: 72.0,
